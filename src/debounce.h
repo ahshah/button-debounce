@@ -10,7 +10,10 @@ constexpr unsigned int BTN_DEBOUNCE_MILLIS = 25;
 
 // Button::getState() returns 0 if a button is registered as pressed, 1 if open.
 constexpr uint8_t BTN_PRESSED = 0;
-constexpr uint8_t BTN_OPEN = 1;
+constexpr uint8_t BTN_TAP_SINGLE = 1;
+constexpr uint8_t BTN_TAP_DOUBLE = 2;
+constexpr uint8_t BTN_TAP_TRIPPLE = 3;
+constexpr uint8_t BTN_LONG_PRESS = 4;
 
 // A function called whenever a button has definitively changed state.
 typedef void (*buttonHandler_t)(uint8_t id, uint8_t btnState);
@@ -27,6 +30,7 @@ public:
    * Returns true if the state has decisively changed, false otherwise.
    */
   bool update(uint8_t latestPoll);
+  bool updateDoubleTap(uint8_t latestPoll);
 
   /** Returns 0 if button pressed, 1 if open. */
   uint8_t getState() const { return _curState; };
@@ -43,6 +47,13 @@ private:
   uint8_t _curState;
   uint8_t _priorPoll;
   uint32_t _readStartTime;
+  uint8_t _pressCount;
+  uint8_t _tapCount;
+
+  uint32_t _tapStartTime;
+  uint32_t _pressStartTime;
+  unsigned int _longPressWindow;
+  unsigned int _tapExpiryWindow;
   unsigned int _pushDebounceInterval;
   unsigned int _releaseDebounceInterval;
   buttonHandler_t _handlerFn;
